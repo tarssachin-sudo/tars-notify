@@ -10,17 +10,30 @@ A lightweight notification server for Clawdbot. Plays a sound when AI tasks comp
 - 📡 **Simple HTTP API** - Easy integration with any tool
 - 🎯 **Multiple sounds** - Success, error, ping, complete
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Windows)
+
+**For WSL + Windows users** (recommended setup):
+
+```cmd
+# 1. Open Command Prompt or PowerShell (NOT WSL)
+# 2. Run this one-liner:
+cd %USERPROFILE% && git clone https://github.com/tarssachin-sudo/tars-notify.git && cd tars-notify && node tars_notify.js start
+
+# 3. Test the sounds
+node tars_notify.js test
+```
+
+Server runs on `http://localhost:8765`
+
+## 🐧 Linux / macOS / WSL (without Windows audio)
 
 ```bash
 # Start the server
 node tars_notify.js start
 
-# Or run directly
-node notify_server.js
+# Test
+node tars_notify.js test
 ```
-
-Server runs on `http://localhost:8765`
 
 ## 📡 API Usage
 
@@ -54,6 +67,20 @@ node tars_notify.js stop
 | `success` | Task completed successfully |
 | `complete` | Long-running task finished |
 | `error` | Something went wrong |
+
+## 🔗 WSL → Windows Integration
+
+If you run Clawdbot in WSL but the server on Windows:
+
+```bash
+# Use the helper script from WSL
+./tars-ping "Analysis complete!" success
+
+# Or manually
+curl -X POST http://$(ip route | grep default | awk '{print $3}'):8765/notify \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Done!","sound":"success"}'
+```
 
 ## 🤖 Clawdbot Integration
 
@@ -104,7 +131,10 @@ The server will start automatically on login.
 tars-notify/
 ├── notify_server.js    # Main server (generates sounds + HTTP API)
 ├── tars_notify.js      # CLI wrapper (start/stop/status/test)
+├── tars-ping           # WSL helper script
 ├── notify_client.js    # JavaScript client library
+├── notify_client.py    # Python client library
+├── test-sounds.bat     # Windows sound test
 ├── sounds/             # Generated WAV files
 └── README.md
 ```
