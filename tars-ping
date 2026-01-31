@@ -1,0 +1,20 @@
+#!/bin/bash
+# tars-ping - Send notification from WSL to Windows Tars Notify server
+# Usage: tars-ping "message" [sound]
+
+MESSAGE="${1:-Done!}"
+SOUND="${2:-success}"
+
+# Try Windows localhost (when server runs on Windows)
+curl -s -X POST http://127.0.0.1:8765/notify \
+  -H "Content-Type: application/json" \
+  -d "{\"message\":\"$MESSAGE\",\"sound\":\"$SOUND\"}" 2>/dev/null && exit 0
+
+# Fallback: try Windows host IP from WSL
+WINDOWS_IP=$(ip route | grep default | awk '{print $3}')
+curl -s -X POST http://$WINDOWS_IP:8765/notify \
+  -H "Content-Type: application/json" \
+  -d "{\"message\":\"$MESSAGE\",\"sound\":\"$SOUND\"}" 2>/dev/null && exit 0
+
+echo "⚠️ Tars Notify server not running on Windows"
+echo "   Start it with: node tars_notify.js start"
